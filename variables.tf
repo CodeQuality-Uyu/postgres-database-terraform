@@ -6,7 +6,11 @@ variable "env"                   { type = string }               # dev | prod
 
 # Pull networking from clusters workspace
 variable "clusters_org"     { type = string }         # TFC org
-variable "clusters_ws_name" { type = string }         # e.g., clusters-dev
+variable "clusters_ws_name" {
+  description = "TFC workspace that contains the cluster. Leave null to use var.env."
+  type        = string
+  default     = null
+}
 
 # DB identity & sizing
 variable "db_name"        { 

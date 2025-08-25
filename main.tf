@@ -1,11 +1,4 @@
-# --- Import cluster networking from Terraform Cloud ---
-data "terraform_remote_state" "cluster" {
-  backend = "remote"
-  config = {
-    organization = var.clusters_org
-    workspaces   = { name = var.clusters_ws_name } # e.g., clusters-dev
-  }
-}
+
 
 # Reuse cluster VPC and PUBLIC subnets (low-budget)
 # RDS will still be PRIVATE (no public IP) when publicly_accessible=false.
@@ -17,6 +10,16 @@ locals {
 
   db_identifier_effective = coalesce(var.db_identifier, "${var.env}-${var.db_name}")
   name_prefix             = "${var.env}-${var.db_name}"
+  cluster_ws = coalesce(var.clusters_ws_name, var.env)  # fallback to "dev", "prod", etc.
+}
+
+# --- Import cluster networking from Terraform Cloud ---
+data "terraform_remote_state" "cluster" {
+  backend = "remote"
+  config = {
+    organization = var.clusters_org
+    workspaces   = { name = local.cluster_ws } # e.g., clusters-dev
+  }
 }
 
 # Security Group for RDS: allow 5432 only from ECS services SG (plus optional CIDRs)
