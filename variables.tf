@@ -2,7 +2,6 @@
 variable "aws_region"            { type = string }               # e.g., us-east-2
 variable "aws_access_key"        { type = string }
 variable "aws_secret_key"        { type = string }
-variable "env"                   { type = string }               # dev | prod
 
 variable "name" {
   description = "Name prefix for RDS resources (identifier)."
