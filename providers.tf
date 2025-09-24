@@ -15,8 +15,8 @@ terraform {
     organization = "ColorLabs"
 
     workspaces {
-      prefix = "${var.env}-"
-      name = "postgres-database-terraform"
+      prefix = "${var.name}-"
+      name = "postgres-database"
     }
   }
 }

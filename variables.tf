@@ -2,94 +2,149 @@
 variable "aws_region"            { type = string }               # e.g., us-east-2
 variable "aws_access_key"        { type = string }
 variable "aws_secret_key"        { type = string }
-variable "env"                   { type = string }               # dev | prod
 
-# Pull networking from clusters workspace
-variable "clusters_org"     { type = string }         # TFC org
-variable "clusters_ws_name" {
-  description = "TFC workspace that contains the cluster. Leave null to use var.env."
+variable "name" {
+  description = "Name prefix for RDS resources (identifier)."
   type        = string
+}
+
+variable "tags" {
+  description = "Common tags."
+  type        = map(string)
+  default     = {}
+}
+
+# Networking
+variable "vpc_id" {
+  description = "VPC ID for SG."
+  type        = string
+}
+variable "db_subnet_ids" {
+  description = "Private subnet IDs for DB Subnet Group (2+ AZs recommended)."
+  type        = list(string)
+}
+variable "allowed_sg_ids" {
+  description = "Security Group IDs allowed to connect to the DB port."
+  type        = list(string)
+  default     = []
+}
+variable "allowed_cidrs" {
+  description = "CIDR blocks allowed to connect (use sparingly)."
+  type        = list(string)
+  default     = []
+}
+
+# Engine & sizing
+variable "engine_version" {
+  description = "PostgreSQL engine version (e.g., 16.3)."
+  type        = string
+  default     = "16.3"
+}
+variable "instance_class" {
+  description = "DB instance class (e.g., db.t4g.micro)."
+  type        = string
+  default     = "db.t4g.micro"
+}
+variable "allocated_storage" {
+  description = "Initial storage (GiB)."
+  type        = number
+  default     = 20
+}
+variable "max_allocated_storage" {
+  description = "Max storage for auto-scaling (GiB)."
+  type        = number
+  default     = 100
+}
+variable "storage_type" {
+  description = "Storage type (gp3 or gp2)."
+  type        = string
+  default     = "gp3"
+}
+variable "storage_throughput" {
+  description = "gp3 throughput (MiB/s). Null lets AWS choose."
+  type        = number
   default     = null
 }
 
-# DB identity & sizing
-variable "db_name"        { 
-  type = string
-  default = "postgres"
+# Ops
+variable "multi_az" {
+  description = "Enable Multi-AZ (costlier)."
+  type        = bool
+  default     = false
 }
-# logical name, e.g. "app"
-variable "db_identifier"  {
-  type = string
-  default = null
-}
-# optional RDS identifier
-variable "engine_version" {
-  type = string
-  default = "16.3"
-}
-variable "instance_class" {
-  type = string
-  default = "db.t4g.micro"
-} # use t3.micro if not Graviton
-
-# Storage & durability
-variable "allocated_storage"     {
-  type = number
-  default = 20
-}   # GiB
-variable "max_allocated_storage" {
-  type = number
-  default = 100
-}  # autoscaling storage
-variable "storage_type"          {
-  type = string
-  default = "gp3"
-}
-variable "multi_az"              {
-  type = bool
-  default = false
-}  # prod: true
-variable "deletion_protection"   {
-  type = bool
-  default = false
-}  # prod: true
 variable "backup_retention_days" {
-  type = number
-  default = 1
-}      # prod: >=7
-variable "copy_tags_to_snapshot" {
-  type = bool
-  default = true
+  description = "Automated backup retention days."
+  type        = number
+  default     = 7
+}
+variable "maintenance_window" {
+  description = "Weekly maintenance window (UTC), e.g., Mon:03:00-Mon:04:00."
+  type        = string
+  default     = null
+}
+variable "backup_window" {
+  description = "Daily backup window (UTC)."
+  type        = string
+  default     = null
+}
+variable "deletion_protection" {
+  description = "Protect instance from deletion."
+  type        = bool
+  default     = true
+}
+variable "apply_immediately" {
+  description = "Apply modifications immediately (may cause restarts)."
+  type        = bool
+  default     = false
 }
 variable "auto_minor_version_upgrade" {
-  type = bool
-  default = true
+  description = "Auto-apply minor engine updates."
+  type        = bool
+  default     = true
+}
+variable "enable_performance_insights" {
+  description = "Enable Performance Insights."
+  type        = bool
+  default     = false
+}
+variable "performance_insights_retention" {
+  description = "PI retention days (7 or 731)."
+  type        = number
+  default     = 7
 }
 
-# Access
-variable "publicly_accessible" {
-  type = bool
-  default = false
-}    # keep private
-# Optional: specify CIDR or extra SGs that can reach the DB (besides ECS services SG)
-variable "extra_ingress_cidrs" {
-  type    = list(string)
-  default = []
-}
-
-# Secrets handling (SSM Parameter Store paths)
-variable "ssm_prefix" {
-  description = "Base path for SSM parameters (no trailing slash)."
+# Auth
+variable "master_username" {
+  description = "Master username."
   type        = string
-  default     = "/app"
+  default     = "master"
+}
+variable "publicly_accessible" {
+  description = "Whether the DB is publicly accessible (usually false)."
+  type        = bool
+  default     = false
+}
+variable "iam_authentication" {
+  description = "Enable IAM authentication for DB logins."
+  type        = bool
+  default     = false
 }
 
-# Optional windows (format: ddd:hh:mm-ddd:hh:mm)
-variable "preferred_backup_window"     { # "03:00-04:00"
-  type = string
-  default = null
+# Parameter group
+variable "create_parameter_group" {
+  description = "Create a custom parameter group."
+  type        = bool
+  default     = true
 }
-variable "preferred_maintenance_window" { # "Sun:04:00-Sun:05:00"
-  type = string
-  default = null
+variable "parameters" {
+  description = "List of additional DB parameters."
+  type = list(object({
+    name         = string
+    value        = string
+    apply_method = optional(string, "pending-reboot")
+  }))
+  default = [
+    # Example: force SSL
+    { name = "rds.force_ssl", value = "1", apply_method = "pending-reboot" }
+  ]
 }
