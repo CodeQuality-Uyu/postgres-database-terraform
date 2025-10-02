@@ -33,8 +33,8 @@ resource "aws_db_instance" "this" {
   password                     = random_password.master.result
 
   backup_retention_period      = var.backup_retention_days
-  preferred_maintenance_window = var.maintenance_window
-  preferred_backup_window      = var.backup_window
+  maintenance_window = var.maintenance_window
+  backup_window      = var.backup_window
 
   deletion_protection          = var.deletion_protection
   auto_minor_version_upgrade   = var.auto_minor_version_upgrade
