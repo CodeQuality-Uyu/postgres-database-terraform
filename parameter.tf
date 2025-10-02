@@ -1,9 +1,9 @@
 resource "aws_db_parameter_group" "this" {
   count       = var.create_parameter_group ? 1 : 0
-  name        = "${var.name}-pg"
+  name        = "${local.name_prefix}-pg"
   family      = "postgres${split(".", var.engine_version)[0]}" # e.g., "postgres16"
-  description = "Custom params for ${var.name}"
-  tags        = var.tags
+  description = "Custom params for ${local.name_prefix}"
+  tags        = merge(var.tags, { Environment = var.environment })
 
   dynamic "parameter" {
     for_each = var.parameters
