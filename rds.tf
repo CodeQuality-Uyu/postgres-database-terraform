@@ -1,7 +1,14 @@
 resource "random_password" "master" {
-  length           = 24
-  special          = true
-  override_char_set = "!#$%&*+-.:;<=>?@^_~" # avoid quotes/backslashes
+  length              = 24
+  special             = true
+  override_characters = "!#$%&*+-.:;<=>?@^_~" # sin comillas ni backslashes
+  upper               = true
+  lower               = true
+  numeric             = true
+  min_upper           = 1
+  min_lower           = 1
+  min_numeric         = 1
+  min_special         = 1
 }
 
 resource "aws_db_instance" "this" {
