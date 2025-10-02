@@ -6,14 +6,10 @@ locals {
   )
 
   # Subnets privadas para el DB Subnet Group (usa var si está, si no las del módulo VPC)
-  db_subnet_ids = length(var.db_subnet_ids) > 0
-    ? var.db_subnet_ids
-    : try(data.terraform_remote_state.vpc.outputs.private_subnet_ids, [])
+  db_subnet_ids = length(var.db_subnet_ids) > 0 ? var.db_subnet_ids : try(data.terraform_remote_state.vpc.outputs.private_subnet_ids, [])
 
   # SGs permitidos para conectar a la DB (ECS tasks u otros)
-  allowed_sg_ids = length(var.allowed_sg_ids) > 0
-    ? var.allowed_sg_ids
-    : compact([try(data.terraform_remote_state.ecs.outputs.service_security_group_id, null)])
+  allowed_sg_ids = length(var.allowed_sg_ids) > 0 ? var.allowed_sg_ids : compact([try(data.terraform_remote_state.ecs.outputs.service_security_group_id, null)])
 
   # -------- Environment defaults ----------
   is_prod = lower(var.environment) == "prod"
