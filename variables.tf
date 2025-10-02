@@ -8,6 +8,11 @@ variable "name" {
   type        = string
 }
 
+variable "remote_state_org"        {
+  type = string
+  default = null
+}
+
 variable "tags" {
   description = "Common tags."
   type        = map(string)
