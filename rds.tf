@@ -1,7 +1,7 @@
 resource "random_password" "master" {
   length              = 24
   special             = true
-  override_characters = "!#$%&*+-.:;<=>?@^_~" # sin comillas ni backslashes
+  override_special    = "!#$%&*+-.:;<=>?@^_~" # sin comillas ni backslashes
   upper               = true
   lower               = true
   numeric             = true
