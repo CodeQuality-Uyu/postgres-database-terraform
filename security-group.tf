@@ -7,7 +7,7 @@ resource "aws_security_group" "rds" {
 
 # Allow from service SGs (ECS tasks)
 resource "aws_vpc_security_group_ingress_rule" "from_sg" {
-  for_each                      = toset(local.allowed_sg_ids)
+  for_each                      = toset(local.allowed_sg_ids_final)
   security_group_id             = aws_security_group.rds.id
   referenced_security_group_id  = each.value
   ip_protocol                   = "tcp"
