@@ -8,9 +8,12 @@ variable "name" {
   type        = string
 }
 
-variable "remote_state_org"        {
+variable "remote_state_org" {
   type = string
-  default = null
+}
+
+variable "remote_state_cluster_ws" {
+  type = string
 }
 
 variable "tags" {
