@@ -40,7 +40,6 @@ resource "aws_scheduler_schedule" "stop_nonprod" {
     role_arn = aws_iam_role.scheduler_role[0].arn
     input    = jsonencode({ DbInstanceIdentifier = aws_db_instance.this.id })
   }
-  tags = merge(var.tags, { Environment = var.environment })
 }
 
 resource "aws_scheduler_schedule" "start_nonprod" {
@@ -54,5 +53,4 @@ resource "aws_scheduler_schedule" "start_nonprod" {
     role_arn = aws_iam_role.scheduler_role[0].arn
     input    = jsonencode({ DbInstanceIdentifier = aws_db_instance.this.id })
   }
-  tags = merge(var.tags, { Environment = var.environment })
 }
