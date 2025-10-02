@@ -10,15 +10,6 @@ terraform {
       version = ">= 3.6"
     }
   }
-
-  backend "remote" {
-    organization = "ColorLabs"
-
-    workspaces {
-      prefix = "${var.name}-"
-      name = "postgres-database"
-    }
-  }
 }
 
 provider "aws" {
