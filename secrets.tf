@@ -1,7 +1,7 @@
 # Master credentials & connection secret (JSON)
 resource "aws_secretsmanager_secret" "master" {
-  name = "rds/${var.name}/master"
-  tags = var.tags
+  name = "rds/${var.name}/${var.environment}/master"
+  tags = merge(var.tags, { Environment = var.environment })
 }
 
 resource "aws_secretsmanager_secret_version" "master" {
