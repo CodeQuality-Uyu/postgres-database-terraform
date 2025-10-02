@@ -19,7 +19,9 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids       = [aws_security_group.rds.id]
   publicly_accessible          = var.publicly_accessible
   multi_az                     = var.multi_az
+  storage_encrypted            = true
 
+  port                         = 5432
   username                     = var.master_username
   password                     = random_password.master.result
 
