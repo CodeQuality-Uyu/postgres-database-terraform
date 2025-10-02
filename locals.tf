@@ -9,18 +9,10 @@ locals {
   db_subnet_ids = length(var.db_subnet_ids) > 0 ? var.db_subnet_ids : try(data.terraform_remote_state.vpc.outputs.private_subnet_ids, [])
 
   # SG(s) de ECS desde remote state (acepta id único o lista)
-  ecs_sg_ids = can(data.terraform_remote_state.ecs.outputs.service_security_group_ids)
-    ? tolist(data.terraform_remote_state.ecs.outputs.service_security_group_ids)
-    : (
-        can(data.terraform_remote_state.ecs.outputs.service_security_group_id)
-        ? compact([data.terraform_remote_state.ecs.outputs.service_security_group_id])
-        : []
-      )
+  ecs_sg_ids = can(data.terraform_remote_state.ecs.outputs.service_security_group_ids) ? tolist(data.terraform_remote_state.ecs.outputs.service_security_group_ids) : (can(data.terraform_remote_state.ecs.outputs.service_security_group_id) ? compact([data.terraform_remote_state.ecs.outputs.service_security_group_id]) : [])
 
   # SG del bastion SSM desde otro remote state (si tenés ese módulo)
-  bastion_sg_ids = can(data.terraform_remote_state.bastion.outputs.ssm_bastion_sg_id)
-    ? [data.terraform_remote_state.bastion.outputs.ssm_bastion_sg_id]
-    : []
+  bastion_sg_ids = can(data.terraform_remote_state.bastion.outputs.ssm_bastion_sg_id) ? [data.terraform_remote_state.bastion.outputs.ssm_bastion_sg_id] : []
 
   # Lista que puedas pasar manualmente (por tfvars)
   user_sg_ids = var.allowed_sg_ids
