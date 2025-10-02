@@ -8,6 +8,19 @@ variable "name" {
   type        = string
 }
 
+variable "remote_state_org" {
+  type = string
+}
+
+variable "remote_state_cluster_ws" {
+  type = string
+  default = null
+}
+
+variable "remote_state_vpc_ws" {
+  type = string
+}
+
 variable "tags" {
   description = "Common tags."
   type        = map(string)
@@ -18,10 +31,12 @@ variable "tags" {
 variable "vpc_id" {
   description = "VPC ID for SG."
   type        = string
+  default     = null
 }
 variable "db_subnet_ids" {
   description = "Private subnet IDs for DB Subnet Group (2+ AZs recommended)."
   type        = list(string)
+  default     = [] 
 }
 variable "allowed_sg_ids" {
   description = "Security Group IDs allowed to connect to the DB port."
