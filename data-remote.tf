@@ -14,3 +14,11 @@ data "terraform_remote_state" "ecs" {
     workspaces = { name = var.remote_state_cluster_ws } # o servicio
   }
 }
+
+data "terraform_remote_state" "bastion" {
+  backend = "remote"
+  config = {
+    organization = var.remote_state_org
+    workspaces   = { name = var.remote_state_vpc_ws }
+  }
+}
