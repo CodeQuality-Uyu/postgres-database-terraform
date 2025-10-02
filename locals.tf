@@ -6,15 +6,8 @@ locals {
   )
 
   # Subnets privadas para el DB Subnet Group:
-  db_subnet_ids = length(var.db_subnet_ids) > 0
-    ? var.db_subnet_ids
-    : try(data.terraform_remote_state.vpc.outputs.private_subnet_ids, [])
+  db_subnet_ids = length(var.db_subnet_ids) > 0 ? var.db_subnet_ids : try(data.terraform_remote_state.vpc.outputs.private_subnet_ids, [])
 
   # SGs permitidos para acceder a la DB (ECS tasks):
-  allowed_sg_ids = length(var.allowed_sg_ids) > 0
-    ? var.allowed_sg_ids
-    : compact([
-        # ajustá el nombre del output si es distinto en tu workspace ECS
-        try(data.terraform_remote_state.ecs.outputs.service_security_group_id, null)
-      ])
+  allowed_sg_ids = length(var.allowed_sg_ids) > 0 ? var.allowed_sg_ids : compact([try(data.terraform_remote_state.ecs.outputs.service_security_group_id, null)])
 }
