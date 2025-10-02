@@ -27,14 +27,6 @@ variable "tags" {
 }
 
 # Networking
-variable "vpc_id" {
-  description = "VPC ID for SG."
-  type        = string
-}
-variable "db_subnet_ids" {
-  description = "Private subnet IDs for DB Subnet Group (2+ AZs recommended)."
-  type        = list(string)
-}
 variable "allowed_sg_ids" {
   description = "Security Group IDs allowed to connect to the DB port."
   type        = list(string)
