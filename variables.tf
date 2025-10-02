@@ -163,3 +163,57 @@ variable "parameters" {
     { name = "rds.force_ssl", value = "1", apply_method = "pending-reboot" }
   ]
 }
+
+# =========================
+# Environment-aware settings
+# =========================
+variable "environment" {
+  description = "Environment name: one of dev, stage, prod."
+  type        = string
+  validation {
+    condition     = contains(["dev","stage","prod"], lower(var.environment))
+    error_message = "environment must be one of: dev, stage, prod."
+  }
+}
+
+variable "use_environment_defaults" {
+  description = "If true, auto-derive class, Multi-AZ, PI, and backup retention from environment."
+  type        = bool
+  default     = true
+}
+
+# Separate backup retention by env (used when use_environment_defaults = true)
+variable "prod_backup_retention_days" {
+  description = "Production backup retention in days."
+  type        = number
+  default     = 14
+}
+variable "nonprod_backup_retention_days" {
+  description = "Dev/Stage backup retention in days."
+  type        = number
+  default     = 3
+}
+
+# Optional nightly stop/start for non-prod (saves cost)
+variable "enable_nonprod_stop_schedule" {
+  description = "Create EventBridge Scheduler to stop/start non-prod DB nightly."
+  type        = bool
+  default     = true
+}
+# Cron expressions using EventBridge/CW syntax; timezone below is applied.
+variable "nonprod_start_cron" {
+  description = "Start schedule CRON for non-prod (EventBridge). Example: cron(0 8 * * ? *)"
+  type        = string
+  default     = "cron(0 8 * * ? *)"  # 08:00 local
+}
+variable "nonprod_stop_cron" {
+  description = "Stop schedule CRON for non-prod (EventBridge). Example: cron(0 23 * * ? *)"
+  type        = string
+  default     = "cron(0 23 * * ? *)" # 23:00 local
+}
+variable "scheduler_timezone" {
+  description = "Timezone for the schedules."
+  type        = string
+  default     = "America/Montevideo"
+}
+

@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "this" {
-  name       = "${var.name}-db-subnets"
+  name       = "${local.name_prefix}-db-subnets"
   subnet_ids = local.db_subnet_ids
-  tags       = merge(var.tags, { Name = "${var.name}-db-subnets" })
+  tags       = merge(var.tags, { Name = "${local.name_prefix}-db-subnets", Environment = var.environment })
 }
