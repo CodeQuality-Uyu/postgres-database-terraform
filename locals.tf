@@ -8,8 +8,29 @@ locals {
   # Subnets privadas para el DB Subnet Group (usa var si está, si no las del módulo VPC)
   db_subnet_ids = length(var.db_subnet_ids) > 0 ? var.db_subnet_ids : try(data.terraform_remote_state.vpc.outputs.private_subnet_ids, [])
 
-  # SGs permitidos para conectar a la DB (ECS tasks u otros)
-  allowed_sg_ids = length(var.allowed_sg_ids) > 0 ? var.allowed_sg_ids : compact([try(data.terraform_remote_state.ecs.outputs.service_security_group_id, null)])
+  # SG(s) de ECS desde remote state (acepta id único o lista)
+  ecs_sg_ids = can(data.terraform_remote_state.ecs.outputs.service_security_group_ids)
+    ? tolist(data.terraform_remote_state.ecs.outputs.service_security_group_ids)
+    : (
+        can(data.terraform_remote_state.ecs.outputs.service_security_group_id)
+        ? compact([data.terraform_remote_state.ecs.outputs.service_security_group_id])
+        : []
+      )
+
+  # SG del bastion SSM desde otro remote state (si tenés ese módulo)
+  bastion_sg_ids = can(data.terraform_remote_state.bastion.outputs.ssm_bastion_sg_id)
+    ? [data.terraform_remote_state.bastion.outputs.ssm_bastion_sg_id]
+    : []
+
+  # Lista que puedas pasar manualmente (por tfvars)
+  user_sg_ids = var.allowed_sg_ids
+
+  # Unión final (concat + distinct) lista para usar
+  allowed_sg_ids_final = distinct(flatten([
+    local.ecs_sg_ids,
+    local.bastion_sg_ids,
+    local.user_sg_ids
+  ]))
 
   # -------- Environment defaults ----------
   is_prod = lower(var.environment) == "prod"
