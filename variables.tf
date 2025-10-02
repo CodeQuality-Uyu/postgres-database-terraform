@@ -16,6 +16,10 @@ variable "remote_state_cluster_ws" {
   type = string
 }
 
+variable "remote_state_vpc_ws" {
+  type = string
+}
+
 variable "tags" {
   description = "Common tags."
   type        = map(string)
