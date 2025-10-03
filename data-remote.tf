@@ -5,11 +5,3 @@ data "terraform_remote_state" "vpc" {
     workspaces = { name = var.remote_state_vpc_ws } # workspace del módulo VPC
   }
 }
-
-data "terraform_remote_state" "bastion" {
-  backend = "remote"
-  config = {
-    organization = var.remote_state_org
-    workspaces   = { name = var.remote_state_vpc_ws }
-  }
-}
