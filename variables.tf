@@ -51,9 +51,9 @@ variable "allowed_cidrs" {
 
 # Engine & sizing
 variable "engine_version" {
-  description = "PostgreSQL engine version (e.g., 16.3)."
+  description = "PostgreSQL engine version (e.g., 16.6)."
   type        = string
-  default     = "16.3"
+  default     = "16.6"
 }
 variable "instance_class" {
   description = "DB instance class (e.g., db.t4g.micro)."
