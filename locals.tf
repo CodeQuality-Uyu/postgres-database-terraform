@@ -31,7 +31,7 @@ locals {
       backup_retention = var.prod_backup_retention_days
     }
     nonprod = {
-      instance_class   = "db.t4g.small"
+      instance_class   = "db.t3.micro" #"db.t4g.small"
       multi_az         = false
       enable_pi        = false
       backup_retention = var.nonprod_backup_retention_days
