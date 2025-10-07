@@ -11,7 +11,10 @@ variable "name" {
 }
 
 variable "remote_state_org"        { type = string }
-variable "remote_state_cluster_ws" { type = string, default = null }
+variable "remote_state_cluster_ws" {
+  type = string
+  default = null
+}
 variable "remote_state_vpc_ws"     { type = string }
 
 variable "tags" {
